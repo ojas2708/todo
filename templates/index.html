@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TO DO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Protest+Guerrilla&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Protest+Guerrilla&family=Public+Sans:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="static/css/style.css"?{% now "U" %}>
+  </head>
+
+  <body>
+    <h1 class="header">To-do App</h1>
+    <div id="center">
+      <form method="POST" action="/">
+        {% csrf_token %}
+        <div class="type">
+          <input
+            type="text"
+            autofocus
+            name="title"
+            class="search"
+            placeholder=" Add Your Tasks..."
+          />
+          <button type="submit" name="create_task" class="btn">Submit</button>
+        </div>
+      </form>
+
+      {% for task in tasks %}
+      <div class="url">
+        <a class="update" onclick="openPopup('update_popup_{{ task.id }}')"
+          >Update</a
+        >
+        <a class="delete" onclick="openPopup('delete_popup_{{ task.id }}')"
+          >Delete</a
+        >
+
+        {% if task.complete == True %}
+        <strike>{{task}}</strike>
+        {% else %}
+        <span>{{task}}</span>
+        {% endif %}
+      </div>
+
+      <!-- Update Popup for Task {{ task.id }} -->
+      <div id="update_popup_{{ task.id }}" class="popup">
+        <h2>Update Task</h2>
+        <!-- Your update form goes here -->
+        <form action="{% url 'update_task' task.id %}" method="post">
+          {% csrf_token %} {% comment %} {{ form.complete.label_tag }} {{
+          form.complete }} {% endcomment %}
+
+          <label for="complete" class="complete">Complete:</label>
+          <input type="checkbox" id="complete" name="complete" class="box" />
+          <br />
+          <button type="submit" class="btn-1">Update</button>
+          <button
+            type="button"
+            onclick="closePopup('update_popup_{{ task.id }}')"
+            class="btn-2"
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+
+      <!-- Delete Popup for Task {{ task.id }} -->
+      <div id="delete_popup_{{ task.id }}" class="popup">
+        <h2>Delete Task</h2>
+        <p>Are you sure you want to delete this task?</p>
+        <form action="{% url 'delete' task.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn-3">Delete</button>
+          <button
+            type="button"
+            onclick="closePopup('delete_popup_{{ task.id }}')"
+            class="btn-4"
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+
+    <script>
+      // Function to open the popup
+      function openPopup(id) {
+        document.getElementById(id).style.display = "block";
+      }
+
+      // Function to close the popup
+      function closePopup(id) {
+        document.getElementById(id).style.display = "none";
+      }
+    </script>
+    {% comment %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% endcomment %}
+  </body>
+</html>
